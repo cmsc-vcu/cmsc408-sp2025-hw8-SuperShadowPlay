@@ -91,7 +91,10 @@ List all non-countries.
 ## (skills: select, where)
 
 run_sql_and_return_html(cnx,"""
-select "doh!" as "Homer says ..." from dual
+select `Short Name`, Region
+from world_bank_data.wdi_country
+where
+  region is NULL
 """)
 ```
 
@@ -110,19 +113,29 @@ Create your own copy of WDI_Country containing just countries.
 # drop table
 execute_ddl(cnx,"""
 drop table if exists wdi_country;
+drop table if exists peopleroles;
+drop table if exists peopleskills;
+drop table if exists roles;
+drop table if exists people;
+drop table if exists skills;
 """)
 ```
 
 ```{python}
 # create table
 execute_ddl(cnx,"""
+create table wdi_country as
+select *
+from world_bank_data.wdi_country
+where not region is null;
 """)
 ```
 
 ```{python}
 # show number of records
 run_sql_and_return_html(cnx,"""
-select "doh!" as "Homer says ..." from dual
+select count(*)
+from wdi_country;
 """)
 ```
 
@@ -134,7 +147,8 @@ According to the World Bank, in 2020 there were how many countries in the world?
 ## (skills: select, aggregate)
 
 run_sql_and_return_html(cnx,"""
-select "doh!" as "Homer says ..." from dual
+select count(*)
+from wdi_country;
 """)
 
 ```
@@ -151,7 +165,10 @@ What are all unique values of region in the wdi_country table?
 ## (skills: select, aggregate, order by)
 
 run_sql_and_return_html(cnx,"""
-select "doh!" as "Homer says ..." from dual
+select `Region`
+from wdi_country
+group by `Region`
+order by `Region`;
 """)
 
 ```
@@ -165,7 +182,10 @@ How many countries are in each region?
 ## (skills: select, aggregate, group by, order by)
 
 run_sql_and_return_html(cnx,"""
-select "doh!" as "Homer says ..." from dual
+select `Region`, count(*) as Total
+from wdi_country
+group by `Region`
+order by Total desc;
 """)
 
 ```
@@ -179,7 +199,9 @@ List the country full names and regions for all countries in north america.
 ## (skills: select, where, order by)
 
 run_sql_and_return_html(cnx,"""
-select "doh!" as "Homer says ..." from dual
+select `Long Name`, Region
+from wdi_country
+where Region = `North America`;
 """)
 
 ```
@@ -194,6 +216,7 @@ select "doh!" as "Homer says ..." from dual
 run_sql_and_return_html(cnx,"""
 select "doh!" as "Homer says ..." from dual
 """)
+# TODO -------------------------------------------------
 
 ```
 
@@ -206,7 +229,10 @@ select "doh!" as "Homer says ..." from dual
 ## (skills: select, where, order by)
 
 run_sql_and_return_html(cnx,"""
-select "doh!" as "Homer says ..." from dual
+select `Country Code`, `Short Name`, `2-alpha code`, `WB-2 code`, Region
+from wdi_country
+where
+  `2-alpha code` <> `WB-2 code`;
 """)
 
 ```
@@ -220,7 +246,9 @@ select "doh!" as "Homer says ..." from dual
 ## (skills: select, aggregate, group by, order by)
 
 run_sql_and_return_html(cnx,"""
-select "doh!" as "Homer says ..." from dual
+select `Income Group`, count(*)
+from wdi_country
+group by `Income Group`
 """)
 
 ```

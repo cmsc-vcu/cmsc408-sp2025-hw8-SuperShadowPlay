@@ -5,3 +5,5 @@
 
 *.csv
 *.quarto_ipynb
+
+__pycache__
