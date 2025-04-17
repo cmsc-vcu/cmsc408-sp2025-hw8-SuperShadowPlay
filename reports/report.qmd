@@ -201,7 +201,7 @@ List the country full names and regions for all countries in north america.
 run_sql_and_return_html(cnx,"""
 select `Long Name`, Region
 from wdi_country
-where Region = `North America`;
+where Region = "North America"
 """)
 
 ```
@@ -214,9 +214,10 @@ where Region = `North America`;
 ## (skills: select, where)
 
 run_sql_and_return_html(cnx,"""
-select "doh!" as "Homer says ..." from dual
+select Region, `Short Name`, `Long Name`
+from wdi_country
+where `Short Name` = "Qatar"
 """)
-# TODO -------------------------------------------------
 
 ```
 
@@ -246,9 +247,9 @@ where
 ## (skills: select, aggregate, group by, order by)
 
 run_sql_and_return_html(cnx,"""
-select `Income Group`, count(*)
+select `Income Group`, count(*) as Total
 from wdi_country
-group by `Income Group`
+group by `Income Group`;
 """)
 
 ```
@@ -263,7 +264,9 @@ group by `Income Group`
 ## in the first column.
 
 run_sql_and_return_html(cnx,"""
-select "doh!" as "Homer says ..." from dual
+select `Short Name`, `Income Group`
+from wdi_country
+where `Income Group` is null;
 """)
 
 ```
@@ -277,15 +280,20 @@ select "doh!" as "Homer says ..." from dual
 ## NOTE - if you get this wrong, all subsequent tables will be wrong!
 
 execute_ddl(cnx,"""
+UPDATE wdi_country
+SET `Income Group` = 'High income'
+WHERE `Short Name` = 'Venezuela';
 """)
-
+# TODO THIS IS BROKEN -------------------------
 
 ```
 ```{python}
 ## Now, display the country again to verify the change stuck!
 
 run_sql_and_return_html(cnx,"""
-select "doh!" as "Homer says ..." from dual
+select `Short Name`, `Income Group`
+from wdi_country
+where `Short Name` = "Venezuela";
 """)
 
 ```
@@ -299,7 +307,10 @@ select "doh!" as "Homer says ..." from dual
 ## (skills: select, aggregate, group by, order by)
 
 run_sql_and_return_html(cnx,"""
-select "doh!" as "Homer says ..." from dual
+select Region, `Income Group`, COUNT(*)
+from wdi_country
+group by Region, `Income Group`
+order by Region
 """)
 
 ```
