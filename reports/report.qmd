@@ -391,7 +391,26 @@ GROUP BY Region;
 ## (skills: select, where, subquery)
 
 run_sql_and_return_html(cnx,"""
-select "doh!" as "Homer says ..." from dual
+WITH marshall AS (
+SELECT
+  `Income Group` as country,
+  Region as onlyregion
+FROM wdi_country
+WHERE `Country Code` = 'MHL'
+)
+SELECT
+  `Country Code`,
+  `Short Name`,
+  Region,
+  `Income Group`
+FROM
+  wdi_country,
+  marshall
+WHERE
+  `Income Group` = marshall.country
+  AND Region = marshall.onlyregion
+ORDER BY
+  `Short Name`;
 """)
 
 ```
@@ -416,7 +435,32 @@ select "doh!" as "Homer says ..." from dual
 ## (skills: select, where, subqueries, joins)
 
 run_sql_and_return_html(cnx,"""
-select "doh!" as "Homer says ..." from dual
+WITH all_regions AS (
+    SELECT DISTINCT Region 
+    FROM wdi_country
+    WHERE Region IS NOT NULL
+),
+all_income_groups AS (
+    SELECT DISTINCT `Income Group` 
+    FROM wdi_country
+    WHERE `Income Group` IS NOT NULL
+),
+all_possible_combinations AS (
+    SELECT r.Region, i.`Income Group`
+    FROM all_regions r
+    CROSS JOIN all_income_groups i
+),
+existing_combinations AS (
+    SELECT DISTINCT Region, `Income Group`
+    FROM wdi_country
+    WHERE Region IS NOT NULL AND `Income Group` IS NOT NULL
+)
+SELECT apc.Region, apc.`Income Group`
+FROM all_possible_combinations apc
+LEFT JOIN existing_combinations ec
+    ON apc.Region = ec.Region AND apc.`Income Group` = ec.`Income Group`
+WHERE ec.Region IS NULL
+ORDER BY apc.Region, apc.`Income Group`;
 """)
 
 ```
