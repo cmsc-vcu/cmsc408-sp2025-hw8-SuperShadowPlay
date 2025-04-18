@@ -280,7 +280,6 @@ where `Income Group` is null;
 ## NOTE - if you get this wrong, all subsequent tables will be wrong!
 
 execute_ddl(cnx,"""
-START TRANSACTION;
 UPDATE wdi_country
 SET `Income Group` = 'High income'
 WHERE `Short Name` = 'Venezuela';
@@ -369,12 +368,12 @@ FROM wdi_country
 GROUP BY Region
 )
 SELECT
-  MAX(prevtask.`Low Income`) as 'Count',
+  `Low Income`,
   Region
 FROM
   prevtask
 WHERE
-  idk man
+  `Low Income` = ( SELECT MAX(`Low Income`) FROM prevtask )
 GROUP BY Region;
 """)
 
