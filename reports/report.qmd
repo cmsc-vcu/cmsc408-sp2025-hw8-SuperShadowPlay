@@ -361,7 +361,21 @@ GROUP BY Region;
 ## (skills: select, aggregate, group by, nested query, order by, limit)
 
 run_sql_and_return_html(cnx,"""
-select "doh!" as "Homer says ..." from dual
+WITH prevtask AS (
+SELECT
+  `Region`,
+  COUNT(CASE WHEN `Income Group` = 'Low income' THEN 1 ELSE NULL END) as 'Low Income'
+FROM wdi_country
+GROUP BY Region
+)
+SELECT
+  MAX(prevtask.`Low Income`) as 'Count',
+  Region
+FROM
+  prevtask
+WHERE
+  idk man
+GROUP BY Region;
 """)
 
 ```
