@@ -91,7 +91,7 @@ List all non-countries.
 ## (skills: select, where)
 
 run_sql_and_return_html(cnx,"""
-select `Short Name`, Region
+select `Short Name`
 from world_bank_data.wdi_country
 where
   region is NULL
@@ -362,19 +362,21 @@ GROUP BY Region;
 run_sql_and_return_html(cnx,"""
 WITH prevtask AS (
 SELECT
-  `Region`,
+  Region,
+  `Income Group`,
   COUNT(CASE WHEN `Income Group` = 'Low income' THEN 1 ELSE NULL END) as 'Low Income'
 FROM wdi_country
-GROUP BY Region
+GROUP BY Region, `Income Group`
 )
 SELECT
-  `Low Income`,
-  Region
+  Region,
+  `Income Group`,
+  `Low Income` as 'Total'
 FROM
   prevtask
 WHERE
   `Low Income` = ( SELECT MAX(`Low Income`) FROM prevtask )
-GROUP BY Region;
+GROUP BY Region, `Income Group`;
 """)
 
 ```
@@ -455,7 +457,10 @@ existing_combinations AS (
     FROM wdi_country
     WHERE Region IS NOT NULL AND `Income Group` IS NOT NULL
 )
-SELECT apc.Region, apc.`Income Group`
+SELECT 
+    apc.Region, 
+    apc.`Income Group`,
+    0 AS CountryCount -- This will be 0 for missing combinations
 FROM all_possible_combinations apc
 LEFT JOIN existing_combinations ec
     ON apc.Region = ec.Region AND apc.`Income Group` = ec.`Income Group`
