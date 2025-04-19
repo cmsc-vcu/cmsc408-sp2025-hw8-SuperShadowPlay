@@ -613,26 +613,22 @@ ORDER BY
 
 1. Reflect on the SQL skills you used throughout these exercises. Which skills do you feel most confident in, and which do you think need more practice? How has this assignment helped you build or reinforce specific SQL competencies?
 
-( response goes here)
+I feel very confident in the general principles of SELECTs and aggregation functions. They feel pretty natural to me after doing all of these exercises.
+I find I still struggle with JOINs. Not that I don't understand the theory behind it, but knowing which join to use and when is still a difficult process for me.
 
 2. Problem-Solving Approach: Describe your approach to tackling the more complex tasks (like Tasks 18, 23, and 24). How did you break down these problems, and what steps did you take when you encountered challenges? How would you approach a similar problem differently in the future?
 
-( response goes here)
-
+I started by breaking down the problem into its constituent parts - what exactly am I doing and where. Then I Googled around to figure out what SQL
+features will accomplish the goals I have. At that point I get to work implementing it and getting the syntax write.
 
 3. Learning Takeaways: Consider the overall learning experience from this assignment. What were the biggest takeaways about working with SQL for data analysis and transformation? How do you think these skills will apply in real-world scenarios or future coursework?
 
-( response goes here)
-
+The biggest takeaways for me were how to synthesize all the different features of SQL that I have learned in class. Especially the later tasks required
+much more consideration that what I started out with in the last assignment. Mainly because you have to utilize multiple features
+to get the result you want in a lot of these tasks. I will definitely appreciate the experience when I have a real database to work on, seeing as now I have
+a working knowledge of SQL.
 
 # README
-
-A quality README is an important part of EVERY project. Using the Quarto *include* command we're including a copy of your README in the project report so that a human can evaluate it.
-
-Make sure that you edit the README so that it's explanatory!  Note that you don't need a readme within the *reports* folder for this assignment. We're only
-focused on the root *README.md*.
-
-[Here is some info](https://www.freecodecamp.org/news/how-to-write-a-good-readme-file/) on how to write a good README!
 
 ::: {style="background:lightgray; margin-left:20px; border-top: 3px solid black; border-bottom: 3px solid black; padding-left:20px; padding-right:20px"}
 {{< include ../README.md >}}
