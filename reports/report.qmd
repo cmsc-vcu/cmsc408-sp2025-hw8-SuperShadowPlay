@@ -484,7 +484,36 @@ ORDER BY apc.Region, apc.`Income Group`;
 ## (skills: select, where, subqueries, joins, aggregate functions)
 
 run_sql_and_return_html(cnx,"""
-select "doh!" as "Homer says ..." from dual
+-- First, create the 6-column table with region, income group, and various counts
+WITH RegionIncomeCount AS (
+    SELECT 
+        w.Region,
+        w.`Income Group`,
+        COUNT(w.`Short Name`) AS CountryCount,
+        (SELECT COUNT(*) FROM wdi_country w2 WHERE w2.Region = w.Region) AS RegionTotal,
+        (SELECT COUNT(*) FROM wdi_country w3 WHERE w3.`Income Group` = w.`Income Group`) AS IncomeTotal,
+        (SELECT COUNT(*) FROM wdi_country) AS GrandTotal
+    FROM 
+        wdi_country w
+    WHERE
+        w.`Income Group` IS NOT NULL
+    GROUP BY 
+        w.Region, w.`Income Group`
+)
+
+-- Now add the 7th column for percentage calculation
+SELECT 
+    Region,
+    `Income Group`,
+    CountryCount,
+    RegionTotal,
+    IncomeTotal,
+    GrandTotal,
+    (CountryCount * 100.0 / GrandTotal) AS PercentageOfTotal
+FROM 
+    RegionIncomeCount
+ORDER BY 
+    Region, `Income Group`;
 """)
 
 
@@ -498,7 +527,39 @@ select "doh!" as "Homer says ..." from dual
 ## columns, Region in the rows and Percent of total in each cell of the table.
 
 run_sql_and_return_html(cnx,"""
-select "doh!" as "Homer says ..." from dual
+WITH RegionIncomeCount AS (
+    SELECT 
+        w.Region,
+        w.`Income Group`,
+        COUNT(w.`Short Name`) AS CountryCount,
+        (SELECT COUNT(*) FROM wdi_country) AS GrandTotal
+    FROM 
+        wdi_country w
+    WHERE
+        w.`Income Group` IS NOT NULL
+    GROUP BY 
+        w.Region, w.`Income Group`
+),
+RegionIncomePercent AS (
+    SELECT
+        Region,
+        `Income Group`,
+        (CountryCount * 100.0 / GrandTotal) AS PercentageOfTotal
+    FROM
+        RegionIncomeCount
+)
+SELECT
+    Region,
+    MAX(CASE WHEN `Income Group` = 'High income' THEN PercentageOfTotal ELSE 0 END) AS `High income`,
+    MAX(CASE WHEN `Income Group` = 'Upper middle income' THEN PercentageOfTotal ELSE 0 END) AS `Upper middle income`,
+    MAX(CASE WHEN `Income Group` = 'Lower middle income' THEN PercentageOfTotal ELSE 0 END) AS `Lower middle income`,
+    MAX(CASE WHEN `Income Group` = 'Low income' THEN PercentageOfTotal ELSE 0 END) AS `Low income`
+FROM
+    RegionIncomePercent
+GROUP BY
+    Region
+ORDER BY
+    Region;
 """)
 
 ```
@@ -513,7 +574,36 @@ select "doh!" as "Homer says ..." from dual
 ## (This is much simpler than task 20!)
 
 run_sql_and_return_html(cnx,"""
-select "doh!" as "Homer says ..." from dual
+-- First, creating the base CTE with income group counts and totals
+WITH IncomeGroupSummary AS (
+    SELECT 
+        w.`Income Group`,
+        COUNT(w.`Short Name`) AS CountryCount,
+        (SELECT COUNT(*) FROM wdi_country WHERE `Income Group` IS NOT NULL) AS ClassifiedTotal
+    FROM 
+        wdi_country w
+    WHERE
+        w.`Income Group` IS NOT NULL
+    GROUP BY 
+        w.`Income Group`
+)
+
+-- Create the final summary table with counts and percentages
+SELECT 
+    `Income Group`,
+    CountryCount AS `Number of Countries`,
+    ClassifiedTotal AS `Total Classified Countries`,
+    (CountryCount * 100.0 / ClassifiedTotal) AS `Percentage of Total`
+FROM 
+    IncomeGroupSummary
+ORDER BY 
+    CASE 
+        WHEN `Income Group` = 'High income' THEN 1
+        WHEN `Income Group` = 'Upper middle income' THEN 2
+        WHEN `Income Group` = 'Lower middle income' THEN 3
+        WHEN `Income Group` = 'Low income' THEN 4
+        ELSE 5
+    END;
 """)
 
 ```
